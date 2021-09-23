@@ -5,7 +5,7 @@ metadata:
   labels:
     app: meunginx
 spec: 
-  replicas: 3
+  replicas: 10
   selector:
     matchLabels: 
       app: meunginx
@@ -16,6 +16,6 @@ spec:
     spec: 
       containers: 
       - name: webserver
-        image: nginx:1.14.2
+        image: nginx:1.21.3
         ports:
         - containerPort: 80
