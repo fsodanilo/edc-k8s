@@ -1,0 +1,1 @@
+eksctl delete cluster --name edck8s --region us-east-2

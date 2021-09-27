@@ -161,7 +161,7 @@ rbac:
 
 # Airflow executor
 # Options: LocalExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
-executor: "CeleryExecutor"
+executor: "KubernetesExecutor"
 
 # If this is true and using LocalExecutor/KubernetesExecutor/CeleryKubernetesExecutor, the scheduler's
 # service account will have access to communicate with the api-server and launch pods.
@@ -170,7 +170,13 @@ executor: "CeleryExecutor"
 allowPodLaunching: true
 
 # Environment variables for all airflow containers
-env: []
+env:
+  - name: AIRFLOW__CORE__REMOTE_LOGGING
+    value: 'True'
+  - name: AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER
+    value: "s3://datalake-dev-k8s/airflow-logs/"
+  - name: AIRFLOW__LOGGIN_REMOTE_LOG_CONN_ID
+    value: "my_aws"
 # - name: ""
 #   value: ""
 
@@ -264,7 +270,7 @@ data:
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
-fernetKey: ~
+fernetKey: "tym6RsvxxskmVZk37hQ5iqTEzGIoWMZaCUPvPBftKMs="
 fernetKeySecretName: ~
 
 # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
@@ -654,10 +660,10 @@ webserver:
   defaultUser:
     enabled: true
     role: Admin
-    username: admin
-    email: admin@example.com
-    firstName: admin
-    lastName: user
+    username: danilooliveira
+    email: fsodanilo@gmail.com
+    firstName: Danilo
+    lastName: Oliveira
     password: admin
 
   # Launch additional containers into webserver.
@@ -682,7 +688,7 @@ webserver:
   #   CSRF_ENABLED = True
 
   service:
-    type: ClusterIP
+    type: LoadBalancer
     ## service annotations
     annotations: {}
     ports:
@@ -934,7 +940,7 @@ pgbouncer:
 
 # Configuration for the redis provisioned by the chart
 redis:
-  enabled: true
+  enabled: false
   terminationGracePeriodSeconds: 600
 
   # Create ServiceAccount
@@ -1164,7 +1170,7 @@ dags:
     ## the name of an existing PVC to use
     existingClaim:
   gitSync:
-    enabled: false
+    enabled: true
 
     # git repo clone url
     # ssh examples ssh://git@github.com/apache/airflow.git
