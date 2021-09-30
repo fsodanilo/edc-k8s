@@ -69,5 +69,5 @@ with DAG(
         python_callable=trigger_crawler_final_func,
     )
 
-converte_parquet >> converte_parquet_monitor >> converte_nota >> converte_nota_monitor
-trigger_crawler_final
+converte_parquet >> converte_parquet_monitor >> converte_nota >> converte_nota_monitor >> trigger_crawler_final
+
