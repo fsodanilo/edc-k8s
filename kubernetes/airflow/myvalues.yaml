@@ -174,8 +174,8 @@ env:
   - name: AIRFLOW__CORE__REMOTE_LOGGING
     value: 'True'
   - name: AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER
-    value: "s3://datalake-dev-k8s/airflow-logs/"
-  - name: AIRFLOW__LOGGIN_REMOTE_LOG_CONN_ID
+    value: 's3://datalake-dev-k8s/airflow-logs/'
+  - name: AIRFLOW__LOGGING__REMOTE_LOG_CONN_ID
     value: "my_aws"
 # - name: ""
 #   value: ""
@@ -1176,15 +1176,15 @@ dags:
     # ssh examples ssh://git@github.com/apache/airflow.git
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/apache/airflow.git
-    branch: v2-1-stable
+    repo: https://github.com/Danilotve/edc-k8s.git
+    branch: dev
     rev: HEAD
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: "tests/dags"
+    subPath: "dags"
     # if your repo needs a user name password
     # you can load them to a k8s secret like the one below
     #   ---
