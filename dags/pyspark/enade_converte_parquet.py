@@ -2,6 +2,10 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 
 # set conf
+print("*********************")
+print("INCIO DA ROTINA OK")
+print("*********************")
+
 conf = (
 SparkConf()
     .set("spark.hadoop.fs.s3a.fast.upload", True)
@@ -10,6 +14,9 @@ SparkConf()
     .set('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:2.7.3')
 )
 
+print("*********************")
+print("SPARK CONFIG OK")
+print("*********************")
 # apply config
 sc = SparkContext(conf=conf).getOrCreate()
     
