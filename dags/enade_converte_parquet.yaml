@@ -19,7 +19,7 @@ spec:
   mode: cluster
   image: "docker.io/daniloedcds/spark-operator:v3.0.0-aws"
   imagePullPolicy: Always
-  mainApplicationFile: s3://datalake-brx-edc/emr-code/pyspark/enade_converte_parquet.py
+  mainApplicationFile: s3a://datalake-brx-edc/emr-code/pyspark/enade_converte_parquet.py
   sparkVersion: "3.0.0"
   restartPolicy:
     type: Never
