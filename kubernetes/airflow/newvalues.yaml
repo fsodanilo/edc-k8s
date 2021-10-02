@@ -307,7 +307,7 @@ data:
 
 # Fernet key settings
 # Note: fernetKey can only be set during install, not upgrade
-fernetKey: tym6RsvxxskmVZk37hQ5iqTEzGIoWMZaCUPvPBftKMs=
+fernetKey: "LqtxQIoSh1Wya771d-YPryoOp0BI2-Q48FEjrmZ1t-o="
 fernetKeySecretName: ~
 
 # Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
@@ -705,7 +705,7 @@ webserver:
   defaultUser:
     enabled: true
     role: Admin
-    username: daniloliveira
+    username: dfso
     email: fsodanilo@gmail.com
     firstName: Danilo
     lastName: Oliveira
@@ -1302,7 +1302,7 @@ dags:
     ## the name of an existing PVC to use
     existingClaim:
   gitSync:
-    enabled: false
+    enabled: true
 
     # git repo clone url
     # ssh examples ssh://git@github.com/apache/airflow.git
