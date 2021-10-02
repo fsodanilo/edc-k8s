@@ -17,7 +17,7 @@ spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  image: "docker.io/daniloedcds/spark-operator:v3.0.0-aws"
+  image: "docker.io/neylsoncrepalde/spark-operator:v3.0.0-aws"
   imagePullPolicy: Always
   mainApplicationFile: s3a://datalake-brx-edc/emr-code/pyspark/enade_converte_parquet.py
   sparkVersion: "3.0.0"
