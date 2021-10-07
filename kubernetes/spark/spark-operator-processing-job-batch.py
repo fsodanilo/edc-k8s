@@ -5,22 +5,29 @@ import os
 aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
 aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
 
-
-# set conf
+# # set conf
 conf = (
 SparkConf()
     .set("spark.hadoop.fs.s3a.access.key", aws_access_key_id)
     .set("spark.hadoop.fs.s3a.secret.key", aws_secret_access_key)
     .set("spark.hadoop.fs.s3a.fast.upload", True)
     .set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+    .set('spark.hadoop.fs.s3a.aws.credentials.provider', 'com.amazonaws.auth.EnvironmentVariableCredentialsProvider')
     .set('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:2.7.3')
+    # .set("spark.hadoop.fs.s3a.access.key", aws_access_key_id)
+    # .set("spark.hadoop.fs.s3a.secret.key", aws_secret_access_key)
+    # .set("spark.hadoop.fs.s3a.fast.upload", True)
+    # .set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+    # .set('spark.hadoop.fs.s3a.aws.credentials.provider', 'com.amazonaws.auth.EnvironmentVariableCredentialsProvider')
+    # .set('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:3.2.0')
 )
 
-# apply config
+# # apply config
 sc = SparkContext(conf=conf).getOrCreate()
 
 
 if __name__ == "__main__":
+    print("PASSEI AQUI")
 
     # init spark session
     spark = SparkSession\
@@ -35,7 +42,7 @@ if __name__ == "__main__":
         .read
         .format("csv")
         .options(header='true', inferSchema='true', delimiter=';')
-        .load("s3://dl-landing-zone-bronx/titanic/titanic.csv")
+        .load("s3a://dl-landing-zone-bronx/titanic/titanic.csv")
     )
     
 
@@ -46,7 +53,7 @@ if __name__ == "__main__":
     .write
     .mode("overwrite")
     .format("parquet")
-    .save("s3://dl-processing-zone-bronx/titanic")
+    .save("s3a://dl-processing-zone-bronx/titanic")
     )
 
     print("*****************")
