@@ -2,13 +2,6 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
-def unidecode_function(tp_sexo):
-    if tp_sexo == '1':
-        return 'F'
-    else:
-        return 'M'
-converte_tp_sexo_str = f.udf(unidecode_function, returnType=StringType())
-
 # set conf
 conf = (
 SparkConf()
@@ -23,6 +16,18 @@ sc = SparkContext(conf=conf).getOrCreate()
 
 
 if __name__ == "__main__":
+
+    print("***********ENTREIIIIII************")
+
+    def unidecode_function(tp_sexo):
+        if tp_sexo == '1':
+            return 'F'
+        else:
+            return 'M'
+    converte_tp_sexo_str = f.udf(unidecode_function, returnType=StringType())
+
+    print("***********SAIR************")
+
 
     spark = SparkSession.builder.getOrCreate()
 
