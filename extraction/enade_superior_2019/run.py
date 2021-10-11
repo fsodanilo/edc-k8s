@@ -25,32 +25,33 @@ print(os.listdir(basepath))
 
 # Pega a pasta "do meio" com caracteres esquisitos
 pastadomeio = os.listdir(basepath)[-1]
-
+print ("está é a pasta do meio" + pastadomeio)
 print("ESTRUTURA DE PASTAS...")
 print(basepath + '/' + pastadomeio + '/')
 print(os.listdir(basepath + '/' + pastadomeio))
+print(basepath + "/" + pastadomeio + "/dados/SUP_ALUNO_2019.CSV")
 
 s3_client = boto3.client('s3', aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'], aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'])
 
 print("Upload ALUNO to S3...")
 s3_client.upload_file(
     basepath + "/" + pastadomeio + "/dados/SUP_ALUNO_2019.CSV", 
-    "datalake-brx-edc/landing-zone", 
-    "edsup2019/aluno/SUP_ALUNO_2019.CSV"
+    "datalake-brx-edc", 
+    "landing-zone/edsup2019/aluno/SUP_ALUNO_2019.CSV"
 )
 
 print("Upload DOCENTE to S3...")
 s3_client.upload_file(
     basepath + "/" + pastadomeio + "/dados/SUP_DOCENTE_2019.CSV", 
-    "datalake-brx-edc/landing-zone", 
-    "edsup2019/docente/SUP_DOCENTE_2019.CSV"
+    "datalake-brx-edc", 
+    "landing-zone/edsup2019/docente/SUP_DOCENTE_2019.CSV"
 )
 
 
 print("Upload CURSO to S3...")
 s3_client.upload_file(
     basepath + "/" + pastadomeio + "/dados/SUP_CURSO_2019.CSV", 
-    "datalake-brx-edc/landing-zone", 
-    "edsup2019/curso/SUP_CURSO_2019.CSV"
+    "datalake-brx-edc", 
+    "landing-zone/edsup2019/curso/SUP_CURSO_2019.CSV"
 )
 

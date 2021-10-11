@@ -27,7 +27,7 @@ if __name__ == '__main__':
         .read
         .format("csv")
         .options(header=True, inferSchema=True, delimiter="|", encoding="latin1")
-        .load("s3a://datalake-brx-edc/raw-data/censosuperior/2019/SUP_DOCENTE_2019.CSV")
+        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/docente/SUP_DOCENTE_2019.CSV")
     )
 
 
