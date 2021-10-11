@@ -35,17 +35,17 @@ with DAG(
     catchup=False,
     tags=['spark', 'kubernetes', 'batch', 'enadesup'],
 ) as dag:
-    extracao = KubernetesPodOperator(
-        namespace='airflow',
-        image="284165992806.dkr.ecr.us-east-2.amazonaws.com/extraction-edsup-2019:v1",
-        cmds=["python", "/run.py"],
-        name="extraction-edsup-2019",
-        task_id="extraction-edsup-2019",
-        image_pull_policy="Always",
-        is_delete_operator_pod=True,
-        in_cluster=True,
-        get_logs=True,
-    )
+    # extracao = KubernetesPodOperator(
+    #     namespace='airflow',
+    #     image="284165992806.dkr.ecr.us-east-2.amazonaws.com/extraction-edsup-2019:v1",
+    #     cmds=["python", "/run.py"],
+    #     name="extraction-edsup-2019",
+    #     task_id="extraction-edsup-2019",
+    #     image_pull_policy="Always",
+    #     is_delete_operator_pod=True,
+    #     in_cluster=True,
+    #     get_logs=True,
+    # )
 
     converte_parquet = SparkKubernetesOperator(
         task_id='converte_parquet',
@@ -62,25 +62,25 @@ with DAG(
         kubernetes_conn_id="kubernetes_default",
     )
 
-    converte_nota = SparkKubernetesOperator(
-        task_id='converte_nota',
-        namespace="airflow",
-        application_file="enade_converte_nota.yaml",
-        kubernetes_conn_id="kubernetes_default",
-        do_xcom_push=True,
-    )
+    # converte_nota = SparkKubernetesOperator(
+    #     task_id='converte_nota',
+    #     namespace="airflow",
+    #     application_file="enade_converte_nota.yaml",
+    #     kubernetes_conn_id="kubernetes_default",
+    #     do_xcom_push=True,
+    # )
 
-    converte_nota_monitor = SparkKubernetesSensor(
-        task_id='converte_nota_monitor',
-        namespace="airflow",
-        application_name="{{ task_instance.xcom_pull(task_ids='converte_nota')['metadata']['name'] }}",
-        kubernetes_conn_id="kubernetes_default",
-    )
+    # converte_nota_monitor = SparkKubernetesSensor(
+    #     task_id='converte_nota_monitor',
+    #     namespace="airflow",
+    #     application_name="{{ task_instance.xcom_pull(task_ids='converte_nota')['metadata']['name'] }}",
+    #     kubernetes_conn_id="kubernetes_default",
+    # )
 
     trigger_crawler_final = PythonOperator(
         task_id='trigger_crawler_final',
         python_callable=trigger_crawler_final_func,
     )
 
-extracao >> converte_parquet >> converte_parquet_monitor >> trigger_crawler_final
+converte_parquet >> converte_parquet_monitor >> trigger_crawler_final
 
