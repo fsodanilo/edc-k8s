@@ -15,7 +15,7 @@ glue = boto3.client('glue', region_name='us-east-2',
 from airflow.utils.dates import days_ago
 
 def trigger_crawler_final_func():
-        glue.start_crawler(Name='enadefinal')
+        glue.start_crawler(Name='enade_docente')
 
 
 with DAG(
