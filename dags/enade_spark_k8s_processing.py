@@ -40,17 +40,17 @@ with DAG(
     catchup=False,
     tags=['spark', 'kubernetes', 'batch', 'enade-superior-2019'],
 ) as dag:
-    # extracao = KubernetesPodOperator(
-    #     namespace='airflow',
-    #     image="284165992806.dkr.ecr.us-east-2.amazonaws.com/extraction-edsup-2019:v2",
-    #     cmds=["python", "/run.py"],
-    #     name="extraction-edsup-2019",
-    #     task_id="extraction-edsup-2019",
-    #     image_pull_policy="Always",
-    #     is_delete_operator_pod=True,
-    #     in_cluster=True,
-    #     get_logs=True,
-    # )
+    extracao = KubernetesPodOperator(
+        namespace='airflow',
+        image="284165992806.dkr.ecr.us-east-2.amazonaws.com/extraction-edsup-2019:v2",
+        cmds=["python", "/run.py"],
+        name="extraction-edsup-2019",
+        task_id="extraction-edsup-2019",
+        image_pull_policy="Always",
+        is_delete_operator_pod=True,
+        in_cluster=True,
+        get_logs=True,
+    )
 
 
     converte_docente_parquet = SparkKubernetesOperator(
@@ -117,7 +117,7 @@ with DAG(
     )
 
 
-[converte_curso_parquet, converte_docente_parquet]
+extracao >> [converte_curso_parquet, converte_docente_parquet]
 converte_curso_parquet >> converte_curso_parquet_monitor >> trigger_crawler_enade_sup_curso
 converte_docente_parquet >> converte_docente_parquet_monitor >> trigger_crawler_enade_sup_docente
 converte_docente_parquet_monitor >> converte_aluno_parquet >> converte_aluno_parquet_monitor >> trigger_crawler_enade_sup_aluno
