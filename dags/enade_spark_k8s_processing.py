@@ -34,6 +34,18 @@ with DAG(
     catchup=False,
     tags=['spark', 'kubernetes', 'batch', 'enadesup'],
 ) as dag:
+    extracao = KubernetesPodOperator(
+        namespace='airflow',
+        image="284165992806.dkr.ecr.us-east-2.amazonaws.com/extraction-edsup-2019:v1",
+        cmds=["python", "/run.py"],
+        name="extraction-edsup-2019",
+        task_id="extraction-edsup-2019",
+        image_pull_policy="Always",
+        is_delete_operator_pod=True,
+        in_cluster=True,
+        get_logs=True,
+    )
+
     converte_parquet = SparkKubernetesOperator(
         task_id='converte_parquet',
         namespace="airflow",
@@ -69,5 +81,5 @@ with DAG(
         python_callable=trigger_crawler_final_func,
     )
 
-converte_parquet >> converte_parquet_monitor >> converte_nota >> converte_nota_monitor >> trigger_crawler_final
+extracao >> converte_parquet >> converte_parquet_monitor >> trigger_crawler_final
 
