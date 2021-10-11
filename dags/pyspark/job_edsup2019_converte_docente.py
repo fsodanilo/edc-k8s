@@ -1,8 +1,15 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, when
+from pyspark.sql import functions as f
+from pyspark.sql.types import StringType
 
-# set conf
+def unidecode_function(tp_sexo):
+    if tp_sexo == '1':
+        return 'F'
+    else:
+        return 'M'
+converte_tp_sexo_str = f.udf(unidecode_function, returnType=StringType())
+
 conf = (
 SparkConf()
     .set("spark.hadoop.fs.s3a.fast.upload", True)
@@ -11,7 +18,6 @@ SparkConf()
     .set('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:2.7.3')
 )
 
-# apply config
 sc = SparkContext(conf=conf).getOrCreate()
 
 
@@ -27,39 +33,23 @@ if __name__ == '__main__':
         .read
         .format("csv")
         .options(header=True, inferSchema=True, delimiter="|", encoding="latin1")
-        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/docente/SUP_DOCENTE_2019.CSV")
+        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/docente/")
     )
 
 
-    print("Tratamento dos dados...")
+### Transformando tp_sexo 
     df = (
         df
-        .withColumn("TP_SEXO", col("TP_SEXO").cast("string"))
-        .withColumn("TP_SEXO", 
-            when(col("TP_SEXO") == '1', "F")
-            .otherwise("M")
+        .withColumn("TP_SEXO", f.col("TP_SEXO").cast("string"))
+        .withColumn("TP_SEXO", converte_tp_sexo_str(f.col("TP_SEXO"))
         )
-    )
+    )  
 
-    df = (
-        df
-        .withColumn("TP_COR_RACA", col("TP_COR_RACA").cast("string"))
-        .withColumn("TP_COR_RACA", 
-            when(col("TP_COR_RACA") == 0, "ND")
-            .when(col("TP_COR_RACA") == 1, "Branca")
-            .when(col("TP_COR_RACA") == 2, "Preta")
-            .when(col("TP_COR_RACA") == 3, "Parda")
-            .when(col("TP_COR_RACA") == 4, "Amarela")
-            .when(col("TP_COR_RACA") == 5, "Indigena")
-            .when(col("TP_COR_RACA") == 9, None)
-            .when(col("TP_COR_RACA").isNull(), None)
-        )
-    )
-
-
-    print("Escrita dos dados...")
+### Escrevendo em formato parquet 
     (
         df
         .write
-        .parquet("s3a://datalake-brx-edc/processing/edsup2019/docente/", mode="overwrite")
+        .mode("overwrite")
+        .format("parquet")
+        .save("s3a://datalake-brx-edc/processing/edsup2019/docente/")    
     )

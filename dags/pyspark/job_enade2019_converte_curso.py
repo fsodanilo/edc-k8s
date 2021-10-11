@@ -1,7 +1,6 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 
-# set conf
 conf = (
 SparkConf()
     .set("spark.hadoop.fs.s3a.fast.upload", True)
@@ -10,7 +9,6 @@ SparkConf()
     .set('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:2.7.3')
 )
 
-# apply config
 sc = SparkContext(conf=conf).getOrCreate()
 
 
@@ -26,11 +24,10 @@ if __name__ == "__main__":
         .read
         .format("csv")
         .options(header=True, inferSchema=True, delimiter="|", encoding="latin1")
-        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/curso/SUP_CURSO_2019.CSV")
+        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/")
     )
 
 ### Escrevendo em formato parquet 
-
     (
         df
         .write
