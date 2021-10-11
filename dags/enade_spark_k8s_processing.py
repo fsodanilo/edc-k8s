@@ -15,17 +15,14 @@ glue = boto3.client('glue', region_name='us-east-2',
 
 from airflow.utils.dates import days_ago
 
-# def trigger_crawler_final_func():
-#         glue.start_crawler(Name='enade_docente')
-
 def trigger_crawler_enade2019_sup_aluno():
     glue.start_crawler(Name='enade_superior')
 
-# def trigger_crawler_enade2019_sup_docente():
-#     glue.start_crawler(Name='enade_docente')
+def trigger_crawler_enade2019_sup_docente():
+    glue.start_crawler(Name='enade_docente')
 
-# def trigger_crawler_enade2019_sup_curso():
-#     glue.start_crawler(Name='enade_curso')
+def trigger_crawler_enade2019_sup_curso():
+    glue.start_crawler(Name='enade_curso')
 
 with DAG(
     'enade_batch_spark_k8s',
