@@ -15,9 +15,17 @@ glue = boto3.client('glue', region_name='us-east-2',
 
 from airflow.utils.dates import days_ago
 
-def trigger_crawler_final_func():
-        glue.start_crawler(Name='enade_docente')
+# def trigger_crawler_final_func():
+#         glue.start_crawler(Name='enade_docente')
 
+def trigger_crawler_enade2019_sup_aluno():
+    glue.start_crawler(Name='enade_superior')
+
+def trigger_crawler_enade2019_sup_docente():
+    glue.start_crawler(Name='enade_docente')
+
+def trigger_crawler_enade2019_sup_curso():
+    glue.start_crawler(Name='enade_curso')
 
 with DAG(
     'enade_batch_spark_k8s',
@@ -29,11 +37,11 @@ with DAG(
         'email_on_retry': False,
         'max_active_runs': 1,
     },
-    description='submit spark-pi as sparkApplication on kubernetes',
+    description='Processamento do Censo da Educação Superior 2019 - Inep (Alunos, Docentes e Cursos)',
     schedule_interval="0 */2 * * *",
     start_date=days_ago(1),
     catchup=False,
-    tags=['spark', 'kubernetes', 'batch', 'enadesup'],
+    tags=['spark', 'kubernetes', 'batch', 'enade-superior-2019'],
 ) as dag:
     extracao = KubernetesPodOperator(
         namespace='airflow',
@@ -47,40 +55,72 @@ with DAG(
         get_logs=True,
     )
 
-    converte_parquet = SparkKubernetesOperator(
-        task_id='converte_parquet',
+
+    converte_docente_parquet = SparkKubernetesOperator(
+        task_id='converte_docente_parquet',
         namespace="airflow",
-        application_file="enade_converte_parquet.yaml",
+        application_file="enade_converte_docente.yaml",
         kubernetes_conn_id="kubernetes_default",
         do_xcom_push=True,
     )
 
-    converte_parquet_monitor = SparkKubernetesSensor(
-        task_id='converte_parquet_monitor',
+    converte_docente_parquet_monitor = SparkKubernetesSensor(
+        task_id='converte_docente_parquet_monitor',
         namespace="airflow",
-        application_name="{{ task_instance.xcom_pull(task_ids='converte_parquet')['metadata']['name'] }}",
+        application_name="{{ task_instance.xcom_pull(task_ids='converte_docente_parquet')['metadata']['name'] }}",
         kubernetes_conn_id="kubernetes_default",
     )
 
-    # converte_nota = SparkKubernetesOperator(
-    #     task_id='converte_nota',
-    #     namespace="airflow",
-    #     application_file="enade_converte_nota.yaml",
-    #     kubernetes_conn_id="kubernetes_default",
-    #     do_xcom_push=True,
-    # )
 
-    # converte_nota_monitor = SparkKubernetesSensor(
-    #     task_id='converte_nota_monitor',
-    #     namespace="airflow",
-    #     application_name="{{ task_instance.xcom_pull(task_ids='converte_nota')['metadata']['name'] }}",
-    #     kubernetes_conn_id="kubernetes_default",
-    # )
-
-    trigger_crawler_final = PythonOperator(
-        task_id='trigger_crawler_final',
-        python_callable=trigger_crawler_final_func,
+    converte_aluno_parquet = SparkKubernetesOperator(
+        task_id='converte_aluno_parquet',
+        namespace="airflow",
+        application_file="enade_converte_aluno.yaml",
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=True,
     )
 
-extracao >> converte_parquet >> converte_parquet_monitor >> trigger_crawler_final
+    converte_aluno_parquet_monitor = SparkKubernetesSensor(
+        task_id='converte_aluno_parquet_monitor',
+        namespace="airflow",
+        application_name="{{ task_instance.xcom_pull(task_ids='converte_aluno_parquet')['metadata']['name'] }}",
+        kubernetes_conn_id="kubernetes_default",
+    )
+    
+    
+    converte_curso_parquet = SparkKubernetesOperator(
+        task_id='converte_curso_parquet',
+        namespace="airflow",
+        application_file="enade_converte_curso.yaml",
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=True,
+    )
 
+    converte_curso_parquet_monitor = SparkKubernetesSensor(
+        task_id='converte_curso_parquet_monitor',
+        namespace="airflow",
+        application_name="{{ task_instance.xcom_pull(task_ids='converte_curso_parquet')['metadata']['name'] }}",
+        kubernetes_conn_id="kubernetes_default",
+    )
+
+
+    trigger_crawler_enade_sup_aluno = PythonOperator(
+        task_id='trigger_crawler_ENADE2019_SUP_ALUNO',
+        python_callable=trigger_crawler_enade2019_sup_aluno,
+    )
+    
+    trigger_crawler_enade_sup_docente = PythonOperator(
+        task_id='trigger_crawler_ENADE2019_SUP_DOCENTE',
+        python_callable=trigger_crawler_enade2019_sup_docente,
+    )
+
+    trigger_crawler_enade_sup_curso = PythonOperator(
+        task_id='trigger_crawler_ENADE2019_SUP_CURSO',
+        python_callable=trigger_crawler_enade2019_sup_curso,
+    )
+
+
+extracao >> [converte_curso_parquet, converte_docente_parquet]
+converte_curso_parquet >> converte_curso_parquet_monitor >> trigger_crawler_enade_sup_curso
+converte_docente_parquet >> converte_docente_parquet_monitor >> trigger_crawler_enade_sup_docente
+converte_docente_parquet_monitor >> converte_aluno_parquet >> converte_aluno_parquet_monitor >> trigger_crawler_enade_sup_aluno
