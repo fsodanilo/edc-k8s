@@ -34,7 +34,7 @@ if __name__ == "__main__":
         .read
         .format("csv")
         .options(header=True, inferSchema=True, delimiter="|", encoding="latin1")
-        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/aluno/")
+        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/aluno/SUP_ALUNO_2019.CSV")
     )
 
 ### Transformando tp_sexo 

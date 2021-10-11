@@ -1,7 +1,7 @@
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
-  name: edsup2019-aluno-{{ macros.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") }}
+  name: edsup2019-curso-{{ macros.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") }}
   namespace: airflow
 spec:
   volumes:
@@ -19,7 +19,7 @@ spec:
   mode: cluster
   image: "3bittechs/spark-py:3.0.1@sha256:dc1225d8429351426f05ba2dca85054368ec35f110601059c20d5587a029860f"
   imagePullPolicy: Always
-  mainApplicationFile: s3a://datalake-brx-edc/emr-code/pyspark/job_edsup2019_converte_curso.py
+  mainApplicationFile: s3a://datalake-brx-edc/emr-code/pyspark/job_enade2019_converte_curso.py
   sparkVersion: "3.1.1"
   restartPolicy:
     type: Never

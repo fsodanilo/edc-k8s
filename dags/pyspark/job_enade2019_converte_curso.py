@@ -26,7 +26,7 @@ if __name__ == "__main__":
         .read
         .format("csv")
         .options(header=True, inferSchema=True, delimiter="|", encoding="latin1")
-        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/curso/")
+        .load("s3a://datalake-brx-edc/landing-zone/edsup2019/curso/SUP_CURSO_2019.CSV")
     )
 
 ### Escrevendo em formato parquet 
