@@ -5,7 +5,8 @@
 
 # Use Case:
 
-Ingestão dos microdados do Censo da Educação Superior 2019 em uma estrutura de Data Lake na AWS. Utilizado o Spark Operator dentro do Kubernetes, onde foi convertido os dados para o formato parquet e escrito os resultados em uma outra camada do Data Lake (processing-zone). Os dados foram disponibilizados para consulta no AWS Athena.
+Pipeline desenvolvido no kuberentes para a extração dos dados diretamento do site do Governo Federal, ingestão na camada landing-zone do data lake, processamento e transformação com spark e disponibilização para consulta no Amazon Athena dos microdados do Censo da Educação Superior 2019.
+Todo o processo de ELT foi orquestrado pelo Apache Airflow.
 
 Arquitetura da solução: 
 
@@ -14,3 +15,4 @@ Arquitetura da solução:
 ## Dags Airflow
 
 ![airflow](img/dags.png)
+
