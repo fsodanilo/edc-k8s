@@ -1,0 +1,57 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: analytics-k8s
+  region: us-east-2
+  version: "1.18"
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: cluster-autoscaler
+        namespace: kube-system
+      attachPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "autoscaling:DescribeAutoScalingGroups"
+              - "autoscaling:DescribeAutoScalingInstances"
+              - "autoscaling:DescribeLaunchConfigurations"
+              - "autoscaling:DescribeTags"
+              - "autoscaling:SetDesiredCapacity"
+              - "autoscaling:DescribeInstances"
+              - "autoscaling:TerminateInstanceInAutoScalingGroup"
+              - "ec2:DescribeLaunchTemplateVersions"
+              - "ec2:DescribeInstanceTypes"
+            Resource: "*"
+managedNodeGroups:
+  - name: analytics-4vcpu-16gb-spot
+    instanceTypes: ["m5.xlarge", "m5a.xlarge", "m5d.xlarge", "m5ad.xlarge", "m4.xlarge", "m5n.xlarge", "m5dn.xlarge"]
+    spot: true
+    minSize: 1
+    maxSize: 20
+    desiredCapacity: 1
+    volumeSize: 50
+    availabilityZones: ["us-east-2a"]
+    labels:
+      lifecycle: Ec2Spot
+      intent: control
+      aws.amazon.com/spot: "true"
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/analytics-k8s: "owned"
+      k8s.io/cluster-autoscaler/node-template/label/lifecycle: Ec2Spot
+      k8s.io/cluster-autoscaler/node-template/label/intent: control
+      k8s.io/cluster-autoscaler/node-template/label/aws.amazon.com/spot: "true"
+    privateNetworking: true
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::284165992806:policy/AWSBrxS3EDC
+    preBootstrapCommands:
+      - yum install -y amazon-ssm-agent
+      - systemctl enable amazon-ssm-agent && systemctl start amazon-ssm-agent
