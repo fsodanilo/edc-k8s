@@ -12,7 +12,7 @@ Dados trabalhados: Microdados do Censo da Educação Superior 2019.
 
 Arquitetura da solução: 
 
-![Kubernetes,EKS](img/k8sgitairflow.png)
+![Kubernetes,EKS](img/arq-k8s-air.png)
 
 ## Dags Airflow
 
